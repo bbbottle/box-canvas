@@ -10,7 +10,7 @@
     "build": "rollup -c",
     "dev": "rollup -c --watch"
   },
-  "repository": "https://github.com/bbbottle/page-menu.git",
+  "repository": "https://github.com/bbbottle/box-canvas.git",
   "author": "bbbottle <z@zjh.im>",
   "license": "MIT",
   "devDependencies": {
