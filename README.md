@@ -1,2 +1,2 @@
 # box-canvas
-canvas to draw box
+A canvas to draw box
