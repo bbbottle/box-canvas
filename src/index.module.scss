@@ -1,0 +1,21 @@
+.canvas {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+
+  .previewBox {
+    position: absolute;
+    border: solid 1px #000;
+    background: #c2c2ef;
+  }
+
+  .clearBtn {
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+    cursor: pointer;
+    z-index: 2;
+  }
+}

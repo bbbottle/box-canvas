@@ -10,7 +10,7 @@ export default {
 
   output: [
     {
-      name: 'comlib',
+      name: 'box-canvas',
       sourcemap: true,
       file: './dist/index.js',
       format: 'umd',
