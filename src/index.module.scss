@@ -7,8 +7,16 @@
 
   .previewBox {
     position: absolute;
-    border: solid 1px #000;
-    background: #c2c2ef;
+    border: solid 1px #0078d7;
+    background: #b9d5f1;
+  }
+
+  .staticBoxContainer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
   }
 
   .clearBtn {

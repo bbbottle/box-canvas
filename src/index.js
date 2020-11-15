@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+
 import {
   fromEvent,
 } from 'rxjs';
@@ -98,10 +100,18 @@ export class BoxCanvas extends React.PureComponent {
     onDrawEnd$.subscribe(this.onDrawBoxDone)
   };
 
-  mountNewBox = (children) => {
-    const newBox = React.createElement('div', { style: this.getPreviewBoxStyle() }, children);
-    this.boxes.push(newBox);
-    return newBox;
+  mountNewBox = (Children) => {
+    const boxStyle = this.getPreviewBoxStyle();
+    const newBox = document.createElement('div');
+
+    newBox.style.position = 'absolute';
+    newBox.style.left = `${boxStyle.left}px`;
+    newBox.style.top = `${boxStyle.top}px`;
+    newBox.style.width = `${boxStyle.width}px`;
+    newBox.style.height = `${boxStyle.height}px`;
+
+    ReactDOM.render(Children, newBox);
+    return this.staticBoxContainer.appendChild(newBox);
   };
 
   onDrawBoxDone = () => {
@@ -111,12 +121,12 @@ export class BoxCanvas extends React.PureComponent {
       }
       this.mountNewBox(this.props.buildBoxContent({
         ...prevState,
+        boxStyle: this.getPreviewBoxStyle(),
         boxIndex: this.boxes.length,
       }))
     }
 
     const afterReset = () => {
-      this.box= [];
       this.initDrawingObservables();
     };
 
@@ -140,6 +150,10 @@ export class BoxCanvas extends React.PureComponent {
 
   setCanvasRef = (ref) => {
     this.canvas = ref;
+  }
+
+  setStaticBoxContainerRef = (ref) => {
+    this.staticBoxContainer = ref;
   }
 
   getPreviewBoxStyle = () => {
@@ -207,13 +221,22 @@ export class BoxCanvas extends React.PureComponent {
     return clearBtnJsx;
   };
 
+  renderStaticBoxes = () => {
+    return (
+      <div
+        className={Style.staticBoxContainer}
+        ref={this.setStaticBoxContainerRef}
+      />
+    )
+  }
+
   render() {
     return (
       <div
         className={Style.canvas}
         ref={this.setCanvasRef}
       >
-        {this.boxes}
+        {this.renderStaticBoxes()}
         {this.renderPreviewBox()}
         {this.renderClearButton()}
       </div>
