@@ -1,6 +1,6 @@
 {
   "name": "@bbbottle/box-canvas",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "a canvas to draw bo",
   "main": "dist/index.js",
   "publishConfig": {
