@@ -38,7 +38,6 @@ export class BoxCanvas extends React.PureComponent {
     }
   }
 
-  boxes = [];
 
   componentDidMount() {
     this.initDrawingObservables();
@@ -163,9 +162,7 @@ export class BoxCanvas extends React.PureComponent {
 
   handleClear = (e) => {
     e.stopPropagation();
-    this.resetPreviewBoxState(noop, () => {
-      this.boxes = [];
-    })
+    this.setState({ boxesProps: [] });
   };
 
   renderPreviewBox = () => {
