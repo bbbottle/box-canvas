@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import {
   fromEvent,
@@ -18,12 +17,12 @@ const noop = () => null;
 
 export class BoxCanvas extends React.PureComponent {
   static propTypes = {
-    buildBoxContent: PropTypes.func,
+    staticBoxRenderer: PropTypes.func,
     clearButtonRenderer: PropTypes.func,
   }
 
   static defaultProps = {
-    buildBoxContent: noop,
+    staticBoxRenderer: noop,
     clearButtonRenderer: null,
   }
 
@@ -34,6 +33,8 @@ export class BoxCanvas extends React.PureComponent {
       previewBoxStartY: 0,
       previewBoxWidth: 0,
       previewBoxHeight: 0,
+
+      boxesProps: [],
     }
   }
 
@@ -107,18 +108,10 @@ export class BoxCanvas extends React.PureComponent {
     up$.subscribe(this.onDrawBoxDone)
   };
 
-  mountNewBox = (Children) => {
-    const boxStyle = this.getPreviewBoxStyle();
-    const newBox = document.createElement('div');
-
-    newBox.style.position = 'absolute';
-    newBox.style.left = `${boxStyle.left}px`;
-    newBox.style.top = `${boxStyle.top}px`;
-    newBox.style.width = `${boxStyle.width}px`;
-    newBox.style.height = `${boxStyle.height}px`;
-
-    ReactDOM.render(Children, newBox);
-    return this.staticBoxContainer.appendChild(newBox);
+  createNewBox = (boxProps) => {
+    this.setState(prevState => ({
+      boxesProps: [...prevState.boxesProps, boxProps],
+    }))
   };
 
   onDrawBoxDone = () => {
@@ -126,11 +119,14 @@ export class BoxCanvas extends React.PureComponent {
       if (!(prevState.previewBoxWidth && prevState.previewBoxWidth)) {
         return;
       }
-      this.mountNewBox(this.props.buildBoxContent({
-        ...prevState,
+
+      const { boxesProps, ...rest } = prevState;
+      const boxProps = {
+        ...rest,
         boxStyle: this.getPreviewBoxStyle(),
-        boxIndex: this.boxes.length,
-      }))
+        boxIndex: boxesProps.length,
+      }
+      this.createNewBox(boxProps);
     }
 
     this.resetPreviewBoxState(beforeReset);
@@ -162,7 +158,7 @@ export class BoxCanvas extends React.PureComponent {
       top: previewBoxHeight >= 0 ? previewBoxStartY : previewBoxStartY + previewBoxHeight,
     }
 
-    return Object.assign({}, pos, size);
+    return Object.assign({position: 'absolute'}, pos, size);
   };
 
   handleClear = (e) => {
@@ -209,11 +205,22 @@ export class BoxCanvas extends React.PureComponent {
   };
 
   renderStaticBoxes = () => {
+    const { boxesProps } = this.state;
+    const { staticBoxRenderer } = this.props;
+
+    const staticBoxes = boxesProps.map(props => React.createElement(
+      'div',
+      { style: props.boxStyle },
+      staticBoxRenderer(props)
+    ))
+
     return (
       <div
         className={Style.staticBoxContainer}
         ref={this.setStaticBoxContainerRef}
-      />
+      >
+        {staticBoxes}
+      </div>
     )
   }
 
