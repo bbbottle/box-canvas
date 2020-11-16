@@ -3,13 +3,12 @@ import ReactDOM from 'react-dom';
 
 import {
   fromEvent,
+  merge,
 } from 'rxjs';
 import {
-  skipUntil,
-  takeUntil,
-  map,
-  take,
-  takeLast,
+  windowWhen,
+  filter,
+  mergeAll,
 } from 'rxjs/operators';
 import PropTypes from 'prop-types';
 
@@ -91,13 +90,21 @@ export class BoxCanvas extends React.PureComponent {
   }
 
   initDrawingObservables = () => {
-    const drawPreviewBox$= this.getDrawPreviewBoxObservable();
-    let onDrawStart$ = drawPreviewBox$.pipe(take(1));
-    let onDrawEnd$ = drawPreviewBox$.pipe(takeLast(1));
+    const move$ = fromEvent(document, 'mousemove');
+    const down$ = fromEvent(document, 'mousedown');
+    const up$ = fromEvent(document, 'mouseup')
 
-    drawPreviewBox$.subscribe(this.setPreviewBoxSize)
-    onDrawStart$.subscribe(this.setPreviewBoxStartPos)
-    onDrawEnd$.subscribe(this.onDrawBoxDone)
+    const drawPreviewBoxMove$ = move$.pipe(
+      // 鼠标落起窗口
+      windowWhen(() => merge(down$, up$)),
+      // 几数窗口即按下移动行为
+      filter((win, index) => index % 2 !== 0),
+      mergeAll()
+    );
+
+    drawPreviewBoxMove$.subscribe(this.setPreviewBoxSize)
+    down$.subscribe(this.setPreviewBoxStartPos)
+    up$.subscribe(this.onDrawBoxDone)
   };
 
   mountNewBox = (Children) => {
@@ -126,27 +133,8 @@ export class BoxCanvas extends React.PureComponent {
       }))
     }
 
-    const afterReset = () => {
-      this.initDrawingObservables();
-    };
-
-    this.resetPreviewBoxState(
-      beforeReset,
-      afterReset,
-    );
+    this.resetPreviewBoxState(beforeReset);
   };
-
-  getDrawPreviewBoxObservable = () => {
-    const move$ = fromEvent(document, 'mousemove');
-    const down$ = fromEvent(document, 'mousedown');
-    const up$ = fromEvent(document, 'mouseup')
-
-    return move$.pipe(
-      skipUntil(down$),
-      takeUntil(up$),
-      map(e => ({x: e.clientX, y: e.clientY})),
-    );
-  }
 
   setCanvasRef = (ref) => {
     this.canvas = ref;
@@ -181,7 +169,6 @@ export class BoxCanvas extends React.PureComponent {
     e.stopPropagation();
     this.resetPreviewBoxState(noop, () => {
       this.boxes = [];
-      this.initDrawingObservables();
     })
   };
 
