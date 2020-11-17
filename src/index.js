@@ -4,14 +4,45 @@ import PropTypes from 'prop-types';
 
 import Style from './index.module.scss'
 import { BoxPreviewer } from './box_preview';
+import { BoxesManager } from './boxes_manager';
 
 const noop = () => null;
 
-export class BoxCanvas extends React.PureComponent {
+const StylePropType = PropTypes.shape({
+  left: PropTypes.number.isRequired,
+  top: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  width: PropTypes.number.isRequired,
+  position: PropTypes.string.isRequired,
+});
+
+const BoxPropType = PropTypes.shape({
+  previewBoxStartX: PropTypes.number.isRequired,
+  previewBoxStartY: PropTypes.number.isRequired,
+
+  // may be negative value
+  previewBoxWidth: PropTypes.number.isRequired,
+  previewBoxHeight: PropTypes.number.isRequired,
+
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+
+  boxIndex: PropTypes.number.isRequired,
+  boxStyle: StylePropType,
+});
+
+class BaseBoxCanvas extends React.PureComponent {
   static propTypes = {
     staticBoxRenderer: PropTypes.func,
     clearButtonRenderer: PropTypes.func,
     attachLineGutter: PropTypes.number, // set value will enable auto attach
+
+    // from parent
+    addBox: PropTypes.func.isRequired,
+    clearBoxes: PropTypes.func.isRequired,
+    removeBox: PropTypes.func.isRequired,
+    updateBox: PropTypes.func.isRequired,
+    boxes: PropTypes.arrayOf(BoxPropType).isRequired,
   }
 
   static defaultProps = {
@@ -22,12 +53,9 @@ export class BoxCanvas extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {
-      boxesProps: [],
-    }
   }
 
-  getPosAfterAttach = (pos) => {
+  getPosAfterAttach = (pos, incMode) => {
     const {
       attachLineGutter
     } = this.props;
@@ -38,17 +66,16 @@ export class BoxCanvas extends React.PureComponent {
       return pos;
     }
 
+    if (incMode) {
+      const offset = attachLineGutter - pos % attachLineGutter;
+      return pos + offset;
+    }
+
     const offset = pos % attachLineGutter;
     if (pos - offset < 0) {
       return pos;
     }
     return pos - offset;
-  };
-
-  createNewBox = (boxProps) => {
-    this.setState(prevState => ({
-      boxesProps: [...prevState.boxesProps, boxProps],
-    }))
   };
 
   setCanvasRef = (ref) => {
@@ -61,13 +88,13 @@ export class BoxCanvas extends React.PureComponent {
 
   handleClear = (e) => {
     e.stopPropagation();
-    this.setState({ boxesProps: [] });
+    this.props.clearBoxes();
   };
 
   renderPreviewBox = () => {
     return (
       <BoxPreviewer
-        onPreviewDone={this.createNewBox}
+        onPreviewDone={this.props.addBox}
       />
     )
   };
@@ -96,14 +123,18 @@ export class BoxCanvas extends React.PureComponent {
   };
 
   renderStaticBoxes = () => {
-    const { boxesProps } = this.state;
-    const { staticBoxRenderer } = this.props;
+    const {
+      staticBoxRenderer,
+      boxes: boxesProps
+    } = this.props;
 
     const staticBoxes = boxesProps.map(props => React.createElement(
       'div',
       {
         style: {
           ...props.boxStyle,
+          width: this.getPosAfterAttach(props.boxStyle.width, true),
+          height: this.getPosAfterAttach(props.boxStyle.height, true),
           left: this.getPosAfterAttach(props.boxStyle.left),
           top: this.getPosAfterAttach(props.boxStyle.top),
         }
@@ -133,4 +164,17 @@ export class BoxCanvas extends React.PureComponent {
       </div>
     );
   }
+}
+
+export const BoxCanvas = (props) => {
+  return (
+    <BoxesManager>
+      {(manageMethods) => (
+        <BaseBoxCanvas
+          {...props}
+          {...manageMethods}
+        />
+      )}
+    </BoxesManager>
+  )
 }
