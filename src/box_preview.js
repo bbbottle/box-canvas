@@ -119,6 +119,8 @@ export class BoxPreviewer extends React.PureComponent {
       const { boxesProps, ...rest } = prevState;
       const boxProps = {
         ...rest,
+        width: Math.abs(rest.previewBoxWidth),
+        height: Math.abs(rest.previewBoxHeight),
         boxStyle: this.getPreviewBoxStyle(),
         boxIndex: boxesProps.length,
       }

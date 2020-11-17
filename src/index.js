@@ -11,11 +11,13 @@ export class BoxCanvas extends React.PureComponent {
   static propTypes = {
     staticBoxRenderer: PropTypes.func,
     clearButtonRenderer: PropTypes.func,
+    attachLineGutter: PropTypes.number, // set value will enable auto attach
   }
 
   static defaultProps = {
     staticBoxRenderer: noop,
     clearButtonRenderer: null,
+    attachLineGutter: 0,
   }
 
   constructor(props) {
@@ -25,6 +27,23 @@ export class BoxCanvas extends React.PureComponent {
     }
   }
 
+  getPosAfterAttach = (pos) => {
+    const {
+      attachLineGutter
+    } = this.props;
+    if (!attachLineGutter
+      || typeof attachLineGutter !== 'number'
+      || attachLineGutter < 0
+    ) {
+      return pos;
+    }
+
+    const offset = pos % attachLineGutter;
+    if (pos - offset < 0) {
+      return pos;
+    }
+    return pos - offset;
+  };
 
   createNewBox = (boxProps) => {
     this.setState(prevState => ({
@@ -82,7 +101,13 @@ export class BoxCanvas extends React.PureComponent {
 
     const staticBoxes = boxesProps.map(props => React.createElement(
       'div',
-      { style: props.boxStyle },
+      {
+        style: {
+          ...props.boxStyle,
+          left: this.getPosAfterAttach(props.boxStyle.left),
+          top: this.getPosAfterAttach(props.boxStyle.top),
+        }
+      },
       staticBoxRenderer(props)
     ))
 
