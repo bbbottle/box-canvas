@@ -6,8 +6,10 @@ import {
 } from 'rxjs';
 import {
   windowWhen,
+  map,
+  skip,
   filter,
-  mergeAll,
+  mergeAll, takeUntil,
 } from 'rxjs/operators';
 import PropTypes from 'prop-types';
 
@@ -95,10 +97,9 @@ export class BoxCanvas extends React.PureComponent {
     const up$ = fromEvent(document, 'mouseup')
 
     const drawPreviewBoxMove$ = move$.pipe(
-      // 鼠标落起窗口
-      windowWhen(() => merge(down$, up$)),
-      // 几数窗口即按下移动行为
-      filter((win, index) => index % 2 !== 0),
+      windowWhen(() => down$),
+      map(win => win.pipe(takeUntil((up$)))),
+      skip(1),
       mergeAll()
     );
 
