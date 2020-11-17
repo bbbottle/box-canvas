@@ -2,13 +2,11 @@ import React from 'react';
 
 import {
   fromEvent,
-  merge,
 } from 'rxjs';
 import {
   windowWhen,
   map,
   skip,
-  filter,
   mergeAll, takeUntil,
 } from 'rxjs/operators';
 import PropTypes from 'prop-types';
