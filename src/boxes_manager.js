@@ -42,9 +42,9 @@ export class BoxesManager extends React.PureComponent {
     })
   }
 
-  updateBox = (idx, box) => {
+  updateBox = (idx, updater) => {
     this.setBoxState((boxes) => {
-      boxes[idx] = box;
+      updater(boxes[idx])
     })
   }
 

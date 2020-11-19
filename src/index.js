@@ -29,6 +29,9 @@ const BoxPropType = PropTypes.shape({
 
   boxIndex: PropTypes.number.isRequired,
   boxStyle: StylePropType,
+
+  remove: PropTypes.func.isRequired,
+  update: PropTypes.func.isRequired,
 });
 
 class BaseBoxCanvas extends React.PureComponent {
@@ -80,24 +83,31 @@ class BaseBoxCanvas extends React.PureComponent {
     return pos - offset;
   };
 
-  setCanvasRef = (ref) => {
-    this.canvas = ref;
-  }
-
-  setStaticBoxContainerRef = (ref) => {
-    this.staticBoxContainer = ref;
-  }
-
   handleClear = (e) => {
     e.stopPropagation();
     this.props.clearBoxes();
   };
 
   renderPreviewBox = () => {
+    const {
+      addBox,
+      removeBox,
+      updateBox,
+    } = this.props;
     return (
       <BoxPreviewer
         renderer={this.props.previewBoxRenderer}
-        onPreviewDone={this.props.addBox}
+        onPreviewDone={(boxProps) => {
+          addBox({
+            ...boxProps,
+            remove: () => {
+              removeBox(boxProps.boxIndex);
+            },
+            update: (updater) => {
+              updateBox(boxProps.boxIndex, updater);
+            },
+          })
+        }}
       />
     )
   };
@@ -148,7 +158,6 @@ class BaseBoxCanvas extends React.PureComponent {
     return (
       <div
         className={Style.staticBoxContainer}
-        ref={this.setStaticBoxContainerRef}
       >
         {staticBoxes}
       </div>
@@ -159,7 +168,6 @@ class BaseBoxCanvas extends React.PureComponent {
     return (
       <div
         className={Style.canvas}
-        ref={this.setCanvasRef}
       >
         {this.renderStaticBoxes()}
         {this.renderPreviewBox()}
