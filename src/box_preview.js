@@ -18,10 +18,12 @@ const noop = () => null;
 export class BoxPreviewer extends React.PureComponent {
   static propTypes = {
     onPreviewDone: PropTypes.func,
+    renderer: PropTypes.func,
   }
 
   static defaultProps = {
     onPreviewDone: noop,
+    renderer: null,
   }
 
   constructor(props) {
@@ -155,6 +157,9 @@ export class BoxPreviewer extends React.PureComponent {
     const style = this.getPreviewBoxStyle();
     if (!(style.width && style.height)) {
       return null;
+    }
+    if (this.props.renderer) {
+      return this.props.renderer(style);
     }
     return (
       <div

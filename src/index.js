@@ -34,6 +34,7 @@ const BoxPropType = PropTypes.shape({
 class BaseBoxCanvas extends React.PureComponent {
   static propTypes = {
     staticBoxRenderer: PropTypes.func,
+    previewBoxRenderer: PropTypes.func,
     clearButtonRenderer: PropTypes.func,
     attachLineGutter: PropTypes.number, // set value will enable auto attach
 
@@ -48,6 +49,7 @@ class BaseBoxCanvas extends React.PureComponent {
   static defaultProps = {
     staticBoxRenderer: noop,
     clearButtonRenderer: null,
+    previewBoxRenderer: null,
     attachLineGutter: 0,
   }
 
@@ -94,6 +96,7 @@ class BaseBoxCanvas extends React.PureComponent {
   renderPreviewBox = () => {
     return (
       <BoxPreviewer
+        renderer={this.props.previewBoxRenderer}
         onPreviewDone={this.props.addBox}
       />
     )
