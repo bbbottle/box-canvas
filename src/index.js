@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Style from './index.module.scss'
-import { BoxPreviewer } from './box_preview';
+import { BoxPreviewer } from './box_previewer';
 import { BoxesManager } from './boxes_manager';
 
 const noop = () => null;
