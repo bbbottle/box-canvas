@@ -93,18 +93,21 @@ class BaseBoxCanvas extends React.PureComponent {
       addBox,
       removeBox,
       updateBox,
+      boxes,
     } = this.props;
     return (
       <BoxPreviewer
         renderer={this.props.previewBoxRenderer}
         onPreviewDone={(boxProps) => {
+          const boxIndex = boxes.length
           addBox({
             ...boxProps,
+            boxIndex,
             remove: () => {
-              removeBox(boxProps.boxIndex);
+              removeBox(boxIndex);
             },
             update: (updater) => {
-              updateBox(boxProps.boxIndex, updater);
+              updateBox(boxIndex, updater);
             },
           })
         }}
@@ -141,9 +144,11 @@ class BaseBoxCanvas extends React.PureComponent {
       boxes: boxesProps
     } = this.props;
 
-    const staticBoxes = boxesProps.map(props => React.createElement(
-      'div',
-      {
+    const staticBoxes = boxesProps.map(props => {
+      if (!props) {
+        return null;
+      }
+      return React.createElement('div', {
         style: {
           ...props.boxStyle,
           width: this.getPosAfterAttach(props.boxStyle.width, true),
@@ -153,7 +158,7 @@ class BaseBoxCanvas extends React.PureComponent {
         }
       },
       staticBoxRenderer(props)
-    ))
+    )});
 
     return (
       <div

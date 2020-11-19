@@ -106,25 +106,17 @@ export class BoxPreviewer extends React.PureComponent {
     up$.subscribe(this.onDrawBoxDone)
   };
 
-  createNewBox = (boxProps) => {
-    this.setState(prevState => ({
-      boxesProps: [...prevState.boxesProps, boxProps],
-    }))
-  };
-
   onDrawBoxDone = () => {
     const beforeReset = (prevState) => {
       if (!(prevState.previewBoxWidth && prevState.previewBoxWidth)) {
         return;
       }
 
-      const { boxesProps, ...rest } = prevState;
       const boxProps = {
-        ...rest,
-        width: Math.abs(rest.previewBoxWidth),
-        height: Math.abs(rest.previewBoxHeight),
+        ...prevState,
+        width: Math.abs(prevState.previewBoxWidth),
+        height: Math.abs(prevState.previewBoxHeight),
         boxStyle: this.getPreviewBoxStyle(),
-        boxIndex: boxesProps.length,
       }
       this.props.onPreviewDone(boxProps);
     }

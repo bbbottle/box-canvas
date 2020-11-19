@@ -32,7 +32,7 @@ export class BoxesManager extends React.PureComponent {
 
   removeBox = (idx) => {
     this.setBoxState((boxes) => {
-      boxes.splice(idx, 1);
+      boxes[idx] = null;
     })
   }
 
