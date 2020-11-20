@@ -4,7 +4,8 @@
   "description": "a canvas to draw bo",
   "main": "dist/index.js",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/",
+    "access": "public"
   },
   "scripts": {
     "build": "rollup -c",
