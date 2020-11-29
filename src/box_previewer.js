@@ -2,16 +2,18 @@ import React from 'react';
 
 import {
   fromEvent,
+  operators,
 } from 'rxjs';
-import {
+import PropTypes from 'prop-types';
+
+import Style from './index.module.scss'
+
+const {
   windowWhen,
   map,
   skip,
   mergeAll, takeUntil,
-} from 'rxjs/operators';
-import PropTypes from 'prop-types';
-
-import Style from './index.module.scss'
+} = operators;
 
 const noop = () => null;
 

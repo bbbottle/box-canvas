@@ -1,8 +1,8 @@
 import React from 'react';
-import produce from "immer"
-
-
+import immer from "immer"
 import PropTypes from 'prop-types';
+
+const produce = immer.produce;
 
 export class BoxesManager extends React.PureComponent {
   static propTypes = {
