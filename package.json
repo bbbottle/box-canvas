@@ -1,6 +1,6 @@
 {
   "name": "@bbbottle/box-canvas",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "description": "a canvas to draw bo",
   "main": "dist/index.js",
   "publishConfig": {
@@ -15,7 +15,7 @@
   "repository": "https://github.com/bbbottle/box-canvas.git",
   "author": "bbbottle <z@zjh.im>",
   "license": "MIT",
-  "devDependecies": {
+  "devDependencies": {
     "@bbbottle/bbbundle": "0.0.7"
   },
   "peerDependencies": {
