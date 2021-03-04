@@ -877,10 +877,10 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@bbbottle/bbbundle@0.0.7":
-  version "0.0.7"
-  resolved "https://npm.pkg.github.com/download/@bbbottle/bbbundle/0.0.7/6447bc92fbeda3fd9b24f2a952fcc2e1b592695fdd57c9000371096320082410#2820afb9d0a4ea7974c51dd783d7e5b402356ba8"
-  integrity sha512-M2ZAkBisM3cD6mLNtrNeXWPCCi1/JUOjwRMK7VAMdcbcgD8PxKXjfrjM/yI/iZj7/y54D99+/UQ+FansA578xw==
+"@bbbottle/bbbundle@0.0.8":
+  version "0.0.8"
+  resolved "https://npm.pkg.github.com/download/@bbbottle/bbbundle/0.0.8/97dd20abb5540cee305b8328f5dd63fe65cd3480a9bcf63f411a8b2d62cc24fe#a590a0d76981764803e8d16bac0edf902304f1f6"
+  integrity sha1-pZCg12mBdkgD6NFrrA7fkCME8fY=
   dependencies:
     "@babel/core" "^7.12.3"
     "@babel/plugin-proposal-class-properties" "^7.12.1"
