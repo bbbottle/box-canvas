@@ -40,6 +40,7 @@ class BaseBoxCanvas extends React.PureComponent {
     previewBoxRenderer: PropTypes.func,
     clearButtonRenderer: PropTypes.func,
     attachLineGutter: PropTypes.number, // set value will enable auto attach
+    boxValidator: PropTypes.func,
 
     // from parent
     addBox: PropTypes.func.isRequired,
@@ -50,6 +51,7 @@ class BaseBoxCanvas extends React.PureComponent {
   }
 
   static defaultProps = {
+    boxValidator: () => true,
     staticBoxRenderer: noop,
     clearButtonRenderer: null,
     previewBoxRenderer: null,
@@ -94,12 +96,16 @@ class BaseBoxCanvas extends React.PureComponent {
       removeBox,
       updateBox,
       boxes,
+      boxValidator,
     } = this.props;
     return (
       <BoxPreviewer
         renderer={this.props.previewBoxRenderer}
         onPreviewDone={(boxProps) => {
           const boxIndex = boxes.length
+          if (!boxValidator(boxProps)) {
+            return;
+          }
           addBox({
             ...boxProps,
             boxIndex,
