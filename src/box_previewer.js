@@ -73,7 +73,7 @@ export class BoxPreviewer extends React.PureComponent {
   };
 
 
-  setPreviewBoxSize = (pos) => {
+  setPreviewBoxProps = (pos) => {
     const {
       x: cursorX,
       y: cursorY
@@ -87,6 +87,8 @@ export class BoxPreviewer extends React.PureComponent {
     this.setState({
       previewBoxWidth: cursorX - previewBoxStartX,
       previewBoxHeight: cursorY - previewBoxStartY,
+      previewBoxEndX: cursorX,
+      previewBoxEndY: cursorY,
     })
   }
 
@@ -102,7 +104,7 @@ export class BoxPreviewer extends React.PureComponent {
       mergeAll()
     );
 
-    drawPreviewBoxMove$.subscribe(this.setPreviewBoxSize)
+    drawPreviewBoxMove$.subscribe(this.setPreviewBoxProps)
     down$.subscribe(this.setPreviewBoxStartPos)
     up$.subscribe(this.onDrawBoxDone)
   };
@@ -129,6 +131,8 @@ export class BoxPreviewer extends React.PureComponent {
     const {
       previewBoxStartX,
       previewBoxStartY,
+      previewBoxEndX,
+      previewBoxEndY,
       previewBoxWidth,
       previewBoxHeight,
     } = this.state;
@@ -141,6 +145,8 @@ export class BoxPreviewer extends React.PureComponent {
     const pos = {
       left: previewBoxWidth >= 0 ? previewBoxStartX : previewBoxStartX + previewBoxWidth,
       top: previewBoxHeight >= 0 ? previewBoxStartY : previewBoxStartY + previewBoxHeight,
+      startPos: [previewBoxStartX, previewBoxStartY],
+      endPos: [previewBoxEndX, previewBoxEndY]
     }
 
     return Object.assign({position: 'absolute'}, pos, size);
