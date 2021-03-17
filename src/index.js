@@ -58,6 +58,14 @@ class BaseBoxCanvas extends React.PureComponent {
     attachLineGutter: 0,
   }
 
+  componentDidMount() {
+    if (this.canvasDom) {
+      this.setState({
+        canvas: this.canvasDom,
+      })
+    }
+  }
+
   constructor(props) {
     super(props);
   }
@@ -101,6 +109,7 @@ class BaseBoxCanvas extends React.PureComponent {
     return (
       <BoxPreviewer
         renderer={this.props.previewBoxRenderer}
+        canvasDom={this.canvasDom}
         onPreviewDone={(boxProps) => {
           const boxIndex = boxes.length
           const id = Symbol();
@@ -172,6 +181,9 @@ class BaseBoxCanvas extends React.PureComponent {
     return (
       <div
         className={Style.staticBoxContainer}
+        ref={(r) => {
+          this.canvasDom = r;
+        }}
       >
         {staticBoxes}
       </div>

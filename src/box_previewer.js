@@ -1,18 +1,11 @@
 import React from 'react';
 
-import {
-  fromEvent,
-} from 'rxjs';
+import {fromEvent,} from 'rxjs';
 import PropTypes from 'prop-types';
 
 import Style from './index.module.scss'
 
-import {
-  windowWhen,
-  map,
-  skip,
-  mergeAll, takeUntil,
-} from 'rxjs/operators';
+import {filter, map, mergeAll, skip, takeUntil, windowWhen,} from 'rxjs/operators';
 
 const noop = () => null;
 
@@ -39,9 +32,14 @@ export class BoxPreviewer extends React.PureComponent {
     }
   }
 
+  // componentDidMount() {
+  //   this.initDrawingObservables();
+  // }
 
-  componentDidMount() {
-    this.initDrawingObservables();
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.canvasDom !== this.props.canvasDom && this.props.canvasDom) {
+      this.initDrawingObservables(this.props.canvasDom);
+    }
   }
 
   resetPreviewBoxState = (before = noop, after = noop) => {
@@ -92,9 +90,16 @@ export class BoxPreviewer extends React.PureComponent {
     })
   }
 
-  initDrawingObservables = () => {
+  initDrawingObservables = ($canvas) => {
     const move$ = fromEvent(document, 'mousemove');
-    const down$ = fromEvent(document, 'mousedown');
+    const originDown$ = fromEvent($canvas, 'mousedown');
+    const down$ = originDown$.pipe(
+      filter(e => {
+        const leftButton = 0;
+        return e.button === leftButton
+          && e.target === $canvas;
+      })
+    )
     const up$ = fromEvent(document, 'mouseup')
 
     const drawPreviewBoxMove$ = move$.pipe(
