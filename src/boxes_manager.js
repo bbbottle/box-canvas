@@ -10,54 +10,58 @@ export class BoxesManager extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      boxesProps: []
+      boxMap: {}
     }
   }
 
   setBoxState = (fn) => {
     this.setState(prevState => {
       return produce(prevState, (draftState) => {
-        fn(draftState.boxesProps);
+        fn(draftState.boxMap);
       })
     })
   }
 
-  addBox = (box) => {
-    this.setBoxState((boxes) => {
-      boxes.push(box);
+  addBox = (id, boxProps) => {
+    this.setBoxState((boxMap) => {
+      boxMap[id] = boxProps;
     })
   }
 
-  removeBox = (idx) => {
-    this.setBoxState((boxes) => {
-      boxes[idx] = null;
+  removeBox = (id) => {
+    this.setBoxState((boxMap) => {
+      delete boxMap[id]
     })
   }
 
   removeAllBoxes = () => {
-    this.setBoxState((boxes) => {
-      boxes.splice(0, boxes.length)
+    this.setBoxState((boxMap) => {
+      boxMap = {};
     })
   }
 
-  updateBox = (idx, updater) => {
+  updateBox = (id, updater) => {
     this.setBoxState((boxes) => {
-      updater(boxes[idx])
+      updater(boxes[id]);
     })
+  }
+
+  listBoxes = () => {
+    const { boxMap } = this.state;
+    const boxes = Object.getOwnPropertySymbols(boxMap).map(s => boxMap[s])
+    return boxes.sort((a, b) => {
+      return a.updateTime - b.updateTime
+    });
   }
 
   render() {
-    const {
-      boxesProps
-    } = this.state;
-
     const { children } = this.props;
     return children({
       addBox: this.addBox,
       removeBox: this.removeBox,
       updateBox: this.updateBox,
       clearBoxes: this.removeAllBoxes,
-      boxes: boxesProps.slice(),
+      boxes: this.listBoxes()
     })
   }
 

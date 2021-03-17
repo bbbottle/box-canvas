@@ -103,17 +103,20 @@ class BaseBoxCanvas extends React.PureComponent {
         renderer={this.props.previewBoxRenderer}
         onPreviewDone={(boxProps) => {
           const boxIndex = boxes.length
+          const id = Symbol();
           if (!boxValidator(boxProps)) {
             return;
           }
-          addBox({
+          addBox(id, {
             ...boxProps,
+            [id]: id,
+            updateTime: Date.now(),
             boxIndex,
             remove: () => {
-              removeBox(boxIndex);
+              removeBox(id);
             },
             update: (updater) => {
-              updateBox(boxIndex, updater);
+              updateBox(id, updater);
             },
           })
         }}
