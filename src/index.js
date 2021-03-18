@@ -42,6 +42,7 @@ class BaseBoxCanvas extends React.PureComponent {
     attachLineGutter: PropTypes.number, // set value will enable auto attach
     boxValidator: PropTypes.func,
 
+    onAfterAddBox: PropTypes.func,
     // from parent
     addBox: PropTypes.func.isRequired,
     clearBoxes: PropTypes.func.isRequired,
@@ -52,6 +53,7 @@ class BaseBoxCanvas extends React.PureComponent {
 
   static defaultProps = {
     boxValidator: () => true,
+    onAfterAddBox: noop,
     staticBoxRenderer: noop,
     clearButtonRenderer: null,
     previewBoxRenderer: null,
@@ -104,6 +106,8 @@ class BaseBoxCanvas extends React.PureComponent {
       removeBox,
       updateBox,
       boxes,
+      onBeforeAddBox,
+      onAfterAddBox,
       boxValidator,
     } = this.props;
     return (
@@ -116,9 +120,11 @@ class BaseBoxCanvas extends React.PureComponent {
           if (!boxValidator(boxProps)) {
             return;
           }
-          addBox(id, {
+          const fullBoxProps = {
             ...boxProps,
+            id,
             [id]: id,
+            createTime: Date.now(),
             updateTime: Date.now(),
             boxIndex,
             remove: () => {
@@ -127,7 +133,9 @@ class BaseBoxCanvas extends React.PureComponent {
             update: (updater) => {
               updateBox(id, updater);
             },
-          })
+          }
+          onBeforeAddBox(id, fullBoxProps);
+          addBox(id, fullBoxProps, onAfterAddBox)
         }}
       />
     )
@@ -166,7 +174,8 @@ class BaseBoxCanvas extends React.PureComponent {
       if (!props) {
         return null;
       }
-      return React.createElement('div', {
+      const boxWrapperProps = {
+        key: props.createTime,
         style: {
           ...props.boxStyle,
           width: this.getPosAfterAttach(props.boxStyle.width, true),
@@ -174,9 +183,16 @@ class BaseBoxCanvas extends React.PureComponent {
           left: this.getPosAfterAttach(props.boxStyle.left),
           top: this.getPosAfterAttach(props.boxStyle.top),
         }
-      },
-      staticBoxRenderer(props)
-    )});
+      };
+
+      return (
+        <div
+          {...boxWrapperProps}
+        >
+          {staticBoxRenderer(props)}
+        </div>
+      );
+    });
 
     return (
       <div

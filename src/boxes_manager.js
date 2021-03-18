@@ -14,17 +14,22 @@ export class BoxesManager extends React.PureComponent {
     }
   }
 
-  setBoxState = (fn) => {
+  setBoxState = (updater, cbFn = () => {}) => {
     this.setState(prevState => {
       return produce(prevState, (draftState) => {
-        fn(draftState.boxMap);
+        updater(draftState.boxMap);
       })
+    }, () => {
+      cbFn();
     })
   }
 
-  addBox = (id, boxProps) => {
+  addBox = (id, boxProps, cbFn = () => {}) => {
     this.setBoxState((boxMap) => {
       boxMap[id] = boxProps;
+    }, () => {
+      const { boxMap } = this.state;
+      cbFn(boxMap[id]);
     })
   }
 
@@ -48,10 +53,7 @@ export class BoxesManager extends React.PureComponent {
 
   listBoxes = () => {
     const { boxMap } = this.state;
-    const boxes = Object.getOwnPropertySymbols(boxMap).map(s => boxMap[s])
-    return boxes.sort((a, b) => {
-      return a.updateTime - b.updateTime
-    });
+    return Object.getOwnPropertySymbols(boxMap).map(s => boxMap[s])
   }
 
   render() {
