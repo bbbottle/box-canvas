@@ -12,11 +12,13 @@ const noop = () => null;
 export class BoxPreviewer extends React.PureComponent {
   static propTypes = {
     onPreviewDone: PropTypes.func,
+    onPreviewStart: PropTypes.func,
     renderer: PropTypes.func,
   }
 
   static defaultProps = {
     onPreviewDone: noop,
+    onPreviewStart: noop,
     renderer: null,
   }
 
@@ -62,6 +64,7 @@ export class BoxPreviewer extends React.PureComponent {
       y: previewBoxStartY
     } = pos;
 
+    this.props.onPreviewStart(previewBoxStartX, previewBoxStartY)
     this.setState({
       previewBoxStartX,
       previewBoxStartY,
